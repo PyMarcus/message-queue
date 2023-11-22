@@ -5,6 +5,8 @@ import (
 	"sync"
 )
 
+type StorageProducer func() Storage
+
 type Storage interface{
 	Push([]byte) (int, error) 
 	Fetch(int) ([]byte, error)
