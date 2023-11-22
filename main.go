@@ -13,10 +13,10 @@ func main(){
 		ListenAddr: ":7777",
 		StorageProducer: st.NewMemoryStore,
 	}
-	_, error := s.NewServer(cfg)
+	server, error := s.NewServer(cfg)
 	if error != nil{
 		panic(error)
 	}
-
 	
+	server.RunAndListen()
 }
