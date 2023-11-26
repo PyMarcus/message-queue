@@ -2,6 +2,7 @@ package storage
 
 import (
 	"fmt"
+	"log"
 	"sync"
 )
 
@@ -27,7 +28,7 @@ func (s *MemoryStore) Push(b []byte) (int, error){
 	s.mutex.Lock()
 	
 	defer s.mutex.Unlock()
-
+    log.Println("::ADD DATA -> ", string(b))
 	s.data = append(s.data, b)
 	return len(s.data) - 1, nil
 }

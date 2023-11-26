@@ -1,4 +1,4 @@
-package main 
+package main
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 )
 
 func main(){
-	fmt.Println("starting queue")
+	fmt.Println("->STARTING MESSAGE QUEUE<-")
 	
 	cfg := &s.Config{
 		ListenAddr: ":7777",
