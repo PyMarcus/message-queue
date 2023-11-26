@@ -17,6 +17,6 @@ func main(){
 	if error != nil{
 		panic(error)
 	}
-	
 	server.RunAndListen()
+	select{}
 }

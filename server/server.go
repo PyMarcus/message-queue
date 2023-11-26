@@ -2,9 +2,10 @@ package server
 
 import (
 	"log"
-	"net/http"
+	//"net/http"
 
 	st "github.com/PyMarcus/message_queue/storage"
+	tr "github.com/PyMarcus/message_queue/transport"
 )
 
 type Config struct{
@@ -15,11 +16,9 @@ type Config struct{
 type Server struct{
 	*Config
 	topics map[string]st.Storage
-}
-
-//handlers
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request){
-	log.Println(r.URL.Path)
+	consumers []tr.Consumer
+	producers []tr.Producer
+	quitch    chan struct{}
 }
 
 // base functions
@@ -27,11 +26,26 @@ func NewServer(cfg *Config) (*Server, error){
 	return &Server{
 		Config: cfg,
 		topics: make(map[string]st.Storage),
+		quitch: make(chan struct{}),
+		producers: []tr.Producer{tr.NewHTTPProducer(cfg.ListenAddr)},
 	}, nil
 }
 
 func (s *Server) RunAndListen(){	
-	log.Fatal(http.ListenAndServe(s.Config.ListenAddr, s))
+    for _, consumer := range s.consumers{
+       if err := consumer.Start(); err != nil{
+           log.Println(err)
+           continue
+       }
+    }
+    
+    for _, producer := range s.producers{
+		if err := producer.Start(); err != nil{
+			log.Println(err)
+			continue
+		}
+	 }
+	<- s.quitch
 }
 
 func (s Server) createTopic(name string) bool{
