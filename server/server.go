@@ -2,7 +2,7 @@ package server
 
 import (
 	"log"
-	//"net/http"
+	"net"
 
 	m "github.com/PyMarcus/message_queue/message"
 	st "github.com/PyMarcus/message_queue/storage"
@@ -16,6 +16,8 @@ type Config struct{
 
 type Server struct{
 	*Config
+	
+	peers map[net.Conn]bool 
 	topics map[string]st.Storage
 	consumers []tr.Consumer
 	producers []tr.Producer
