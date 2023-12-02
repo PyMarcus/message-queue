@@ -16,6 +16,7 @@ func req(){
 
 type Consumer interface{
 	Start() error 
+	GetServer() *Server
 }
  
 type WSConsumer struct{
@@ -26,6 +27,10 @@ type WSConsumer struct{
 
 func NewWSConsumer(address string, serv *Server) (*WSConsumer, error){
     return &WSConsumer{ListenAddr: address, server: serv}, nil
+}
+
+func (ws WSConsumer) GetServer() *Server{
+    return ws.server
 }
 
 func (ws *WSConsumer) Start() error{

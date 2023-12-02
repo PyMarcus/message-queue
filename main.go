@@ -12,7 +12,7 @@ import (
 )
 
 func main(){
-	fmt.Println("->STARTING MESSAGE QUEUE<-")
+	fmt.Println("==========STARTING MESSAGE QUEUE==========")
 	
 	cfg := &s.Config{
 		ListenAddr: ":7777",

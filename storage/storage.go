@@ -11,6 +11,7 @@ type StorageProducer func() Storage
 type Storage interface{
 	Push([]byte) (int, error) 
 	Fetch(int) ([]byte, error)
+	ClearMemory()
 }
 
 type MemoryStore struct{
@@ -42,4 +43,9 @@ func (s *MemoryStore) Fetch(offset int) ([]byte, error){
 		return nil, fmt.Errorf("Offset (%d) is too high", offset)
 	}
 	return s.data[offset], nil
+}
+
+func (s *MemoryStore) ClearMemory(){
+   var cleaner [][]byte
+   s.data = cleaner
 }

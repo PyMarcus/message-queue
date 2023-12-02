@@ -19,6 +19,7 @@ type WSPeer struct{
 func NewPeer(conn *websocket.Conn, serv *Server) *WSPeer{
     p := &WSPeer{
         conn: conn,
+        serv: serv,
     }
     
     // read loop
@@ -26,7 +27,8 @@ func NewPeer(conn *websocket.Conn, serv *Server) *WSPeer{
        var msg message.Message
        for{
           if err := p.conn.ReadJSON(&msg); err != nil{
-             log.Fatal("fail to read message in peer loop! ", err)
+             log.Println("fail to read message in peer loop! ", err)
+             serv.RemovePeer(p, "topico")
              return
           }
           
@@ -51,7 +53,7 @@ func (p *WSPeer) handleMessage(msg message.Message) error{
    log.Println("Data: ", msg.Data)
    log.Println("========================")
    if msg.Topic != "" && msg.Data != ""{
-      p.serv.AddPeerToTopic(msg.Topic)
+      p.serv.AddPeerToTopic(msg.Topic, p)
    }
    return nil   
 }
