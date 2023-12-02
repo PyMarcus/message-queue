@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/PyMarcus/message_queue/peer"
 	"github.com/gorilla/websocket"
 )
 
@@ -24,8 +25,8 @@ type WSConsumer struct{
 	peers  chan *websocket.Conn
 }
 
-func NewWSConsumer(address string) (*WSConsumer, error){
-    return &WSConsumer{ListenAddr: address}, nil
+func NewWSConsumer(address string, serv *Server) (*WSConsumer, error){
+    return &WSConsumer{ListenAddr: address, server: serv}, nil
 }
 
 func (ws *WSConsumer) Start() error{
@@ -39,7 +40,11 @@ func (ws *WSConsumer) ServeHTTP(w http.ResponseWriter, r *http.Request){
        log.Println("fail to connect into websocket! ", err)
        return
     }
-        
-    ws.server.AddPeer(conn)
-    log.Println(conn)
+    p := peer.NewPeer(conn)
+    ws.server.AddPeer(p)
+}
+
+type WSMessage struct{
+    Topic  string  `json:"topic"`
+    Action string  `json:"action"`
 }

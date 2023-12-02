@@ -5,9 +5,9 @@ import (
 	"sync"
 
 	m "github.com/PyMarcus/message_queue/message"
+	"github.com/PyMarcus/message_queue/peer"
 	st "github.com/PyMarcus/message_queue/storage"
 	tr "github.com/PyMarcus/message_queue/transport"
-	"github.com/gorilla/websocket"
 )
 
 type Config struct{
@@ -19,7 +19,7 @@ type Config struct{
 type Server struct{
 	*Config
 	mu     sync.RWMutex
-	peers map[*websocket.Conn]bool 
+	peers map[peer.Peer]bool 
 	
 	topics    map[string]st.Storage
 	consumers []Consumer
@@ -31,14 +31,18 @@ type Server struct{
 // base functions
 func NewServer(cfg *Config) (*Server, error){
     pm := make(chan m.Message)
-    consumer, _ := NewWSConsumer(cfg.WebSocketAddr)
-	return &Server{
+    consumer, _ := NewWSConsumer(cfg.WebSocketAddr, &Server{})
+	s := &Server{
 		Config: cfg,
+		peers: make(map[peer.Peer]bool),
 		topics: make(map[string]st.Storage),
 		quitch: make(chan struct{}),
 		producers: []tr.Producer{tr.NewHTTPProducer(cfg.ListenAddr, pm)},
 		producersCh: pm,
-		consumers: []Consumer{ consumer },}, nil}
+		}
+	s.consumers = append(s.consumers,  consumer,)
+	return s, nil
+}
 
 func (s *Server) RunAndListen(){	
     for _, consumer := range s.consumers{
@@ -90,9 +94,13 @@ func (s *Server) loop(){
    }
 }
 
-func (s *Server) AddPeer(conn *websocket.Conn){
+func (s *Server) AddPeer(conn peer.Peer){
     s.mu.Lock()
+	defer s.mu.Unlock()
+	
+    if s.peers == nil {
+        s.peers = make(map[peer.Peer]bool)
+    }
 	s.peers[conn] = true
-	s.mu.Unlock()
-	log.Println("Add new peer")
+	log.Println("Added new peer ", conn)
 }
