@@ -64,7 +64,7 @@ func (s *Server) RunAndListen(){
 	 s.loop()
 }
 
-func (s Server) createTopicIfNotExists(name string) st.Storage{
+func (s *Server) createTopicIfNotExists(name string) st.Storage{
 	_, exists := s.topics[name]
 	
 	if !exists{
@@ -76,7 +76,7 @@ func (s Server) createTopicIfNotExists(name string) st.Storage{
 
 func (s *Server) publish(message m.Message) (int, error){
     store := s.createTopicIfNotExists(message.Topic)
-	return store.Push(message.Data)
+	return store.Push([]byte(message.Data))
 }
 
 func (s *Server) loop(){

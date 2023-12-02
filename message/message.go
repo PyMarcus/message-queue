@@ -1,6 +1,6 @@
 package message
 
 type Message struct{
-    Topic string 
-    Data []byte 
+    Topic string `json:"topic"`
+    Data  string `json:"data"`
 }

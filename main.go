@@ -1,11 +1,14 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"fmt"
+	"log"
+
+	"github.com/PyMarcus/message_queue/server"
 	s "github.com/PyMarcus/message_queue/server"
 	st "github.com/PyMarcus/message_queue/storage"
-	
+
 	"github.com/gorilla/websocket"
 )
 
@@ -21,8 +24,10 @@ func main(){
 	if error != nil{
 		panic(error)
 	}
-	consumerWSConn()
-
+	// this is for tests -> firts, comment this to execute server ,and, then, uncomment this to make requests over websockets.
+	// npm install -g wscat
+	// wscat -c ws://localhost:6666
+	//consumerWSConn()
 	server.RunAndListen()
 	select{}
 }
@@ -32,6 +37,12 @@ func consumerWSConn(){
   if err != nil{
     log.Fatal(err)
   }
-  
-  log.Println(conn)
+  msg := &server.WSMessage{Action: "subscribe", Topic: "vanilla"}
+  log.Println("Sending message ", msg)
+  data, err := json.Marshal(msg)
+  if err != nil{
+     log.Println("Fail to marshal message")
+     log.Fatal(err)
+  }
+  conn.WriteMessage(websocket.TextMessage, data)
 }

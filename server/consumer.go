@@ -35,7 +35,13 @@ func (ws *WSConsumer) Start() error{
 }
 
 func (ws *WSConsumer) ServeHTTP(w http.ResponseWriter, r *http.Request){
-    conn, err := updgrade.Upgrade(w, r, nil)
+    var upgrader = websocket.Upgrader{
+        CheckOrigin: func(r *http.Request) bool {
+            return true // Allow all origins for testing purposes
+        },
+    }
+    
+    conn, err := upgrader.Upgrade(w, r, nil)
     if err != nil{
        log.Println("fail to connect into websocket! ", err)
        return

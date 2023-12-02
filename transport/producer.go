@@ -53,7 +53,7 @@ func (h *HTTPProducer) ServeHTTP(w http.ResponseWriter, r *http.Request){
 		}
 		h.producerCh <- m.Message{
 		   Topic: topic,
-		   Data: body,
+		   Data: string(body),
 		}
 		w.Write([]byte("Added!"))
 	}
