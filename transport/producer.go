@@ -26,7 +26,7 @@ func NewHTTPProducer(listenAddr string, producerCh chan m.Message) Producer{
 }
 
 func (h *HTTPProducer) Start() error{
-	log.Println("HTTP Transport started on ", h.Addr)
+	log.Println("Producer started on ", h.Addr)
     return http.ListenAndServe(h.Addr, h)
 }
 

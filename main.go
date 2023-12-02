@@ -11,6 +11,7 @@ func main(){
 	
 	cfg := &s.Config{
 		ListenAddr: ":7777",
+		WebSocketAddr: ":6666",
 		StorageProducer: st.NewMemoryStore,
 	}
 	server, error := s.NewServer(cfg)
