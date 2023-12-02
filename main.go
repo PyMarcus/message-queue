@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/PyMarcus/message_queue/server"
-	s "github.com/PyMarcus/message_queue/server"
+	s "github.com/PyMarcus/message_queue/common"
 	st "github.com/PyMarcus/message_queue/storage"
 
 	"github.com/gorilla/websocket"
@@ -37,7 +36,7 @@ func consumerWSConn(){
   if err != nil{
     log.Fatal(err)
   }
-  msg := &server.WSMessage{Action: "subscribe", Topic: "vanilla"}
+  msg := &s.WSMessage{Action: "subscribe", Topic: "vanilla"}
   log.Println("Sending message ", msg)
   data, err := json.Marshal(msg)
   if err != nil{

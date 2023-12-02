@@ -1,10 +1,9 @@
-package server
+package common
 
 import (
 	"log"
 	"net/http"
 
-	"github.com/PyMarcus/message_queue/peer"
 	"github.com/gorilla/websocket"
 )
 
@@ -46,7 +45,7 @@ func (ws *WSConsumer) ServeHTTP(w http.ResponseWriter, r *http.Request){
        log.Println("fail to connect into websocket! ", err)
        return
     }
-    p := peer.NewPeer(conn)
+    p := NewPeer(conn, ws.server)
     ws.server.AddPeer(p)
 }
 

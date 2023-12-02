@@ -1,11 +1,10 @@
-package server
+package common
 
 import (
 	"log"
 	"sync"
 
 	m "github.com/PyMarcus/message_queue/message"
-	"github.com/PyMarcus/message_queue/peer"
 	st "github.com/PyMarcus/message_queue/storage"
 	tr "github.com/PyMarcus/message_queue/transport"
 )
@@ -19,7 +18,7 @@ type Config struct{
 type Server struct{
 	*Config
 	mu     sync.RWMutex
-	peers map[peer.Peer]bool 
+	peers map[Peer]bool 
 	
 	topics    map[string]st.Storage
 	consumers []Consumer
@@ -34,7 +33,7 @@ func NewServer(cfg *Config) (*Server, error){
     consumer, _ := NewWSConsumer(cfg.WebSocketAddr, &Server{})
 	s := &Server{
 		Config: cfg,
-		peers: make(map[peer.Peer]bool),
+		peers: make(map[Peer]bool),
 		topics: make(map[string]st.Storage),
 		quitch: make(chan struct{}),
 		producers: []tr.Producer{tr.NewHTTPProducer(cfg.ListenAddr, pm)},
@@ -94,13 +93,17 @@ func (s *Server) loop(){
    }
 }
 
-func (s *Server) AddPeer(conn peer.Peer){
+func (s *Server) AddPeer(conn Peer){
     s.mu.Lock()
 	defer s.mu.Unlock()
 	
     if s.peers == nil {
-        s.peers = make(map[peer.Peer]bool)
+        s.peers = make(map[Peer]bool)
     }
 	s.peers[conn] = true
 	log.Println("Added new peer ", conn)
+}
+
+func (s *Server) AddPeerToTopic(topic string){
+  
 }

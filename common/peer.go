@@ -1,4 +1,4 @@
-package peer
+package common
 
 import (
     "log"
@@ -12,10 +12,11 @@ type Peer interface{
 
 type WSPeer struct{
     conn *websocket.Conn
+    serv *Server
 }
 
 //:::MAYBE, this could to produce memory leaks!
-func NewPeer(conn *websocket.Conn) *WSPeer{
+func NewPeer(conn *websocket.Conn, serv *Server) *WSPeer{
     p := &WSPeer{
         conn: conn,
     }
@@ -25,7 +26,7 @@ func NewPeer(conn *websocket.Conn) *WSPeer{
        var msg message.Message
        for{
           if err := p.conn.ReadJSON(&msg); err != nil{
-             log.Println("fail to read message in peer loop! ", err)
+             log.Fatal("fail to read message in peer loop! ", err)
              return
           }
           
@@ -44,6 +45,13 @@ func (p *WSPeer) Send(b []byte) (err error){
 }
 
 func (p *WSPeer) handleMessage(msg message.Message) error{
-   log.Println("handling message", msg)  
+   log.Println("========================")
+   log.Println("handling message")  
+   log.Println("Topic: ", msg.Topic)
+   log.Println("Data: ", msg.Data)
+   log.Println("========================")
+   if msg.Topic != "" && msg.Data != ""{
+      p.serv.AddPeerToTopic(msg.Topic)
+   }
    return nil   
 }
